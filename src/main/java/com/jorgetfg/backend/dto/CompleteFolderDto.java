@@ -23,5 +23,5 @@ public class CompleteFolderDto {
     private Long id;
     private String name;
     private List<Folder> subfolders;
-    private Set<Subscription> subscriptions;
+    private List<Subscription> subscriptions;
 }

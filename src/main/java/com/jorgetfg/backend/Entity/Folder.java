@@ -35,7 +35,7 @@ public class Folder {
     private List<Folder> subfolders;
 
     @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<Subscription> subscriptions;
+    private List<Subscription> subscriptions;
 
     @ToString.Exclude
     @ManyToOne

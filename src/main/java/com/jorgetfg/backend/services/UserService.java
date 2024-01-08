@@ -1,8 +1,6 @@
 package com.jorgetfg.backend.services;
 
-import com.jorgetfg.backend.dto.CredentialDto;
-import com.jorgetfg.backend.dto.SignUpDto;
-import com.jorgetfg.backend.dto.UserDto;
+import com.jorgetfg.backend.dto.*;
 import com.jorgetfg.backend.Entity.User;
 import com.jorgetfg.backend.exceptions.AppException;
 import com.jorgetfg.backend.mappers.UserMapper;
@@ -13,6 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.CharBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -54,5 +54,53 @@ public class UserService {
         User savedUser = userRepository.save(user);
 
         return userMapper.toUserDto(savedUser);
+    }
+
+    public List<CompleteUserDto> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        List<CompleteUserDto> usersDto = new ArrayList<>();
+        for (User u: users) {
+            CompleteUserDto completeUser = userMapper.toCompleteUserDto(u);
+            usersDto.add(completeUser);
+        }
+       return usersDto;
+    }
+
+    public CompleteUserDto getUserById(Long userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+
+        if (optionalUser.isEmpty()) {
+            throw new AppException("No user with that id", HttpStatus.BAD_REQUEST);
+        }
+        User user = userRepository.findById(userId).get();
+        CompleteUserDto completeUser = userMapper.toCompleteUserDto(user);
+
+        return completeUser;
+    }
+
+    public CompleteUserDto updateUser(UpdateUserDto updateUser, Long userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+
+        if (optionalUser.isEmpty()) {
+            throw new AppException("No user with that id", HttpStatus.BAD_REQUEST);
+        }
+        User user = userRepository.findById(userId).get();
+
+        user.setName(updateUser.getName());
+        user.setSurname(updateUser.getSurname());
+        user.setMessages(updateUser.isMessages());
+
+        return userMapper.toCompleteUserDto(user);
+    }
+
+    public CompleteUserDto deleteUser(Long userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+
+        if (optionalUser.isEmpty()) {
+            throw new AppException("No user with that id", HttpStatus.BAD_REQUEST);
+        }
+        User user = userRepository.findById(userId).get();
+        userRepository.delete(user);
+        return userMapper.toCompleteUserDto(user);
     }
 }

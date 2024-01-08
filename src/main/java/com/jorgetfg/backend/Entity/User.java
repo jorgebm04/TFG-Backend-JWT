@@ -1,10 +1,7 @@
 package com.jorgetfg.backend.Entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -36,6 +33,7 @@ public class User {
     @Column(name = "user_messages", nullable = false)
     private boolean messages;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Folder> folders;
 }

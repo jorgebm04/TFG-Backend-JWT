@@ -2,10 +2,7 @@ package com.jorgetfg.backend.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.apache.catalina.LifecycleState;
 
 import java.util.List;
@@ -22,22 +19,25 @@ public class Folder {
     @Id
     @Column(name = "folder_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long folderId;
+    private Long folderId;
 
     @Column(name = "folder_name", nullable = false)
     private String name;
 
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "parent_folder_id")
     @JsonIgnore
     private Folder parentFolder;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "parentFolder", cascade = CascadeType.ALL)
     private List<Folder> subfolders;
 
-    @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Subscription> subscriptions;
 
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore

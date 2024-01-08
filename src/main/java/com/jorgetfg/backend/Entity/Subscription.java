@@ -3,10 +3,7 @@ package com.jorgetfg.backend.Entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 
@@ -21,7 +18,7 @@ public class Subscription {
     @Id
     @Column(name = "subscription_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long subscriptionId;
+    private Long subscriptionId;
 
     @Column(name = "subscription_name",nullable = false,length = 255)
     private String name;
@@ -51,10 +48,9 @@ public class Subscription {
     @Column(name = "subscription_comments")
     private String subscriptionComments;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinTable(name = "folder_subscription",
-            joinColumns = @JoinColumn(name = "subscription_id"),
-            inverseJoinColumns = @JoinColumn(name = "folder_id"))
+    @ToString.Exclude
+    @ManyToOne
+    @JoinColumn(name = "folder_id", nullable = false)
     @JsonIgnore
     private Folder folder;
 }

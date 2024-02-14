@@ -3,14 +3,12 @@ package com.jorgetfg.backend.mappers;
 import com.jorgetfg.backend.dto.CompleteUserDto;
 import com.jorgetfg.backend.dto.SignUpDto;
 import com.jorgetfg.backend.dto.UserDto;
-import com.jorgetfg.backend.Entity.User;
+import com.jorgetfg.backend.entities.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.util.Optional;
-
 @Mapper(componentModel = "spring")
-public interface UserMapper {
+public interface IUserMapper {
 
     @Mapping(source="email", target = "email")
     @Mapping(source = "userId", target = "id")

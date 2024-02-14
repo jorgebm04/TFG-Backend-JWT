@@ -1,7 +1,8 @@
-package com.jorgetfg.backend.Entity;
+package com.jorgetfg.backend.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.jorgetfg.backend.configuration.AttributeEncryptor;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,18 +35,23 @@ public class Subscription {
     private int subscriptionFrequency;
 
     @Column(name = "subscription_username")
+    @Convert(converter = AttributeEncryptor.class)
     private String subscriptionUsername;
 
     @Column(name = "subscription_password")
+    @Convert(converter = AttributeEncryptor.class)
     private String subscriptionPassword;
 
     @Column(name = "subscription_email")
+    @Convert(converter = AttributeEncryptor.class)
     private String subscriptionEmail;
 
     @Column(name = "subscription_bank")
+    @Convert(converter = AttributeEncryptor.class)
     private String lastDigitsBank;
 
     @Column(name = "subscription_comments")
+    @Convert(converter = AttributeEncryptor.class)
     private String subscriptionComments;
 
     @ToString.Exclude

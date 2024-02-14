@@ -1,54 +1,69 @@
-package com.jorgetfg.backend.services;
+package com.jorgetfg.backend.services.Imp;
 
-import com.jorgetfg.backend.Entity.Folder;
-import com.jorgetfg.backend.Entity.Subscription;
-import com.jorgetfg.backend.Entity.User;
+import com.jorgetfg.backend.entities.Folder;
+import com.jorgetfg.backend.entities.Subscription;
+import com.jorgetfg.backend.entities.User;
 import com.jorgetfg.backend.dto.CompleteFolderDto;
 import com.jorgetfg.backend.dto.CompleteSubscriptionDto;
 import com.jorgetfg.backend.dto.CreateSubscriptionDto;
 import com.jorgetfg.backend.exceptions.AppException;
-import com.jorgetfg.backend.mappers.SubscriptionMapper;
-import com.jorgetfg.backend.repositories.FolderRepository;
-import com.jorgetfg.backend.repositories.SubscriptionRepository;
-import com.jorgetfg.backend.repositories.UserRepository;
+import com.jorgetfg.backend.mappers.IFolderMapper;
+import com.jorgetfg.backend.mappers.ISubscriptionMapper;
+import com.jorgetfg.backend.repositories.IFolderRepository;
+import com.jorgetfg.backend.repositories.ISubscriptionRepository;
+import com.jorgetfg.backend.repositories.IUserRepository;
+import com.jorgetfg.backend.services.ISubscriptionService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RequiredArgsConstructor
 @Service
-public class SubscriptionService {
+public class SubscriptionService implements ISubscriptionService {
 
-    private final SubscriptionRepository subscriptionRepository;
-    private final FolderRepository folderRepository;
-    private final UserRepository userRepository;
+    private final ISubscriptionRepository subscriptionRepository;
+    private final IFolderRepository folderRepository;
+    private final IUserRepository userRepository;
     private final FolderService folderService;
-    private final SubscriptionMapper subscriptionMapper;
+    private final ISubscriptionMapper subscriptionMapper;
+    private final IFolderMapper folderMapper;
 
-    public Set<CompleteSubscriptionDto> getUserSubscriptions(Long userId) {
+    public List<CompleteSubscriptionDto> getUserSubscriptions(Long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
-        Set<Subscription> userSubscriptions = new HashSet<>();
-        Set<CompleteSubscriptionDto> userCompleteSubscription = new HashSet<>();
+        List<Subscription> userSubscriptions = new ArrayList<>();
+        List<CompleteSubscriptionDto> userCompleteSubscription = new ArrayList<>();
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
         if (optionalUser.isEmpty()) {
-            throw new AppException("No user with that id", HttpStatus.BAD_REQUEST);
+            return null;
         }
 
         List<CompleteFolderDto> userFolders = folderService.getUserFolders(userId);
 
         for (CompleteFolderDto c: userFolders) {
-            for (Subscription s: c.getSubscriptions()) {
-                userSubscriptions.add(s);
-            }
+            addSubfoldersSubscriptions(c,userSubscriptions);
+            userSubscriptions.addAll(c.getSubscriptions());
         }
 
         for (Subscription s: userSubscriptions){
-            userCompleteSubscription.add(subscriptionMapper.toCompleteSubscriptionDto(s));
+            CompleteSubscriptionDto completeSubscriptionDto = subscriptionMapper.toCompleteSubscriptionDto(s);
+            completeSubscriptionDto.setContractDate(simpleDateFormat.format(s.getContractDate()));
+            userCompleteSubscription.add(completeSubscriptionDto);
         }
 
         return userCompleteSubscription;
+    }
+
+    private void addSubfoldersSubscriptions(CompleteFolderDto folder, List<Subscription> subscriptions) {
+        for (Folder subfolder: folder.getSubfolders()) {
+            CompleteFolderDto completeSubFolder = folderMapper.toCompleteFolderDto(subfolder);
+            addSubfoldersSubscriptions(completeSubFolder,subscriptions);
+            subscriptions.addAll(subfolder.getSubscriptions());
+        }
     }
 
     public CompleteSubscriptionDto getUserSubscription(Long userId, Long subscriptionId) {
@@ -56,11 +71,11 @@ public class SubscriptionService {
         Optional<Subscription> optionalSubscription = subscriptionRepository.findById(subscriptionId);
 
         if (optionalUser.isEmpty()) {
-            throw new AppException("No user with that id", HttpStatus.BAD_REQUEST);
+            return null;
         }
 
         if (optionalSubscription.isEmpty()) {
-            throw new AppException("No subscription with that id", HttpStatus.BAD_REQUEST);
+            return null;
         }
 
         Subscription subscription = optionalSubscription.get();
@@ -73,11 +88,11 @@ public class SubscriptionService {
         Optional<Folder> optionalFolder = folderRepository.findById(folderId);
 
         if (optionalUser.isEmpty()) {
-            throw new AppException("No user with that id", HttpStatus.BAD_REQUEST);
+            return null;
         }
 
         if (optionalFolder.isEmpty()) {
-            throw new AppException("No folder with that id", HttpStatus.BAD_REQUEST);
+            return null;
         }
 
         Subscription subscription = new Subscription(
@@ -106,15 +121,15 @@ public class SubscriptionService {
         Optional<Subscription> optionalSubscription = subscriptionRepository.findById(subscriptionId);
 
         if (optionalUser.isEmpty()) {
-            throw new AppException("No user with that id", HttpStatus.BAD_REQUEST);
+            return null;
         }
 
         if (optionalFolder.isEmpty()) {
-            throw new AppException("No folder with that id", HttpStatus.BAD_REQUEST);
+            return null;
         }
 
         if (optionalSubscription.isEmpty()) {
-            throw new AppException("No subscription with that id", HttpStatus.BAD_REQUEST);
+            return null;
         }
 
         Subscription subscription = optionalSubscription.get();
@@ -134,24 +149,25 @@ public class SubscriptionService {
         return subscriptionMapper.toCompleteSubscriptionDto(subscription);
     }
 
+    @Transactional
     public CompleteSubscriptionDto deleteUserSubscription(Long userId, Long folderId, Long subscriptionId) {
         Optional<User> optionalUser = userRepository.findById(userId);
         Optional<Folder> optionalFolder = folderRepository.findById(folderId);
         Optional<Subscription> optionalSubscription = subscriptionRepository.findById(subscriptionId);
 
         if (optionalUser.isEmpty()) {
-            throw new AppException("No user with that id", HttpStatus.BAD_REQUEST);
+            return null;
         }
 
         if (optionalFolder.isEmpty()) {
-            throw new AppException("No folder with that id", HttpStatus.BAD_REQUEST);
+            return null;
         }
 
         if (optionalSubscription.isEmpty()) {
-            throw new AppException("No subscription with that id", HttpStatus.BAD_REQUEST);
+            return null;
         }
 
-        subscriptionRepository.delete(optionalSubscription.get());
+        subscriptionRepository.deleteById(subscriptionId);
 
         return subscriptionMapper.toCompleteSubscriptionDto(optionalSubscription.get());
     }

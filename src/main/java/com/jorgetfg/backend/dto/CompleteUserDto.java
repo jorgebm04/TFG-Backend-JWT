@@ -1,9 +1,6 @@
 package com.jorgetfg.backend.dto;
 
-import com.jorgetfg.backend.Entity.Folder;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.OneToMany;
+import com.jorgetfg.backend.entities.Folder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

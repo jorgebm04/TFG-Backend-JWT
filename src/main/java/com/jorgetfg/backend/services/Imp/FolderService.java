@@ -1,16 +1,15 @@
-package com.jorgetfg.backend.services;
+package com.jorgetfg.backend.services.Imp;
 
-import com.jorgetfg.backend.Entity.Folder;
-import com.jorgetfg.backend.Entity.Subscription;
-import com.jorgetfg.backend.Entity.User;
+import com.jorgetfg.backend.entities.Folder;
+import com.jorgetfg.backend.entities.User;
 import com.jorgetfg.backend.dto.CompleteFolderDto;
 import com.jorgetfg.backend.dto.CreateFolderDto;
 import com.jorgetfg.backend.exceptions.AppException;
-import com.jorgetfg.backend.mappers.FolderMapper;
-import com.jorgetfg.backend.repositories.FolderRepository;
-import com.jorgetfg.backend.repositories.UserRepository;
+import com.jorgetfg.backend.mappers.IFolderMapper;
+import com.jorgetfg.backend.repositories.IFolderRepository;
+import com.jorgetfg.backend.repositories.IUserRepository;
+import com.jorgetfg.backend.services.IFolderService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -18,17 +17,17 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-public class FolderService {
+public class FolderService implements IFolderService {
 
-    private final FolderRepository folderRepository;
-    private final UserRepository userRepository;
-    private final FolderMapper folderMapper;
+    private final IFolderRepository folderRepository;
+    private final IUserRepository userRepository;
+    private final IFolderMapper folderMapper;
 
     public List<CompleteFolderDto> getUserFolders(Long userId) {
         Optional<User> optionalUser = userRepository.findById(userId);
 
         if (optionalUser.isEmpty()) {
-            throw new AppException("No user with that id", HttpStatus.BAD_REQUEST);
+            return null;
         }
 
         List<Folder> folders = userRepository.findById(userId).get().getFolders();
@@ -70,13 +69,13 @@ public class FolderService {
         Optional<User> optionalUser = userRepository.findById(userId);
 
         if (optionalUser.isEmpty()) {
-            throw new AppException("No user with that id", HttpStatus.BAD_REQUEST);
+            return null;
         }
 
         Optional<Folder> optionalFolder = folderRepository.findById(folderId);
 
         if (optionalFolder.isEmpty()) {
-            throw new AppException("No folder with that id", HttpStatus.BAD_REQUEST);
+            return null;
         }
 
         Folder folder = optionalFolder.get();
@@ -89,14 +88,14 @@ public class FolderService {
         Optional<Folder> optionalparentFolder = null;
 
         if (optionalUser.isEmpty()) {
-            throw new AppException("No user with that id", HttpStatus.BAD_REQUEST);
+            return null;
         }
 
         if (createFolder.getParentFolderId()!=null){
             optionalparentFolder = folderRepository.findById(createFolder.getParentFolderId());
 
             if (optionalparentFolder.isEmpty()) {
-                throw new AppException("No folder with that id", HttpStatus.BAD_REQUEST);
+                return null;
             }
         }
 
@@ -120,18 +119,18 @@ public class FolderService {
         Optional<Folder> optionalParentFolder = null;
 
         if (optionalUser.isEmpty()) {
-            throw new AppException("No user with that id", HttpStatus.BAD_REQUEST);
+            return null;
         }
 
         if (optionalFolder.isEmpty()) {
-            throw new AppException("No folder with that id", HttpStatus.BAD_REQUEST);
+            return null;
         }
 
         if (createFolder.getParentFolderId()!=null){
             optionalParentFolder = folderRepository.findById(createFolder.getParentFolderId());
 
             if (optionalParentFolder.isEmpty()) {
-                throw new AppException("No folder with that id", HttpStatus.BAD_REQUEST);
+                return null;
             }
         }
 
@@ -150,11 +149,11 @@ public class FolderService {
         Optional<Folder> optionalFolder = folderRepository.findById(folderId);
 
         if (optionalUser.isEmpty()) {
-            throw new AppException("No user with that id", HttpStatus.BAD_REQUEST);
+            return null;
         }
 
         if (optionalFolder.isEmpty()) {
-            throw new AppException("No folder with that id", HttpStatus.BAD_REQUEST);
+            return null;
         }
 
         folderRepository.delete(optionalFolder.get());

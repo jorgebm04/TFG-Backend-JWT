@@ -1,9 +1,9 @@
 package com.jorgetfg.backend.repositories;
 
-import com.jorgetfg.backend.Entity.Subscription;
+import com.jorgetfg.backend.entities.Folder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
+public interface IFolderRepository extends JpaRepository<Folder, Long> {
 }

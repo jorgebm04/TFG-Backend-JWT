@@ -1,10 +1,11 @@
-package com.jorgetfg.backend.services;
+package com.jorgetfg.backend.services.Imp;
 
 import com.jorgetfg.backend.dto.*;
-import com.jorgetfg.backend.Entity.User;
+import com.jorgetfg.backend.entities.User;
 import com.jorgetfg.backend.exceptions.AppException;
-import com.jorgetfg.backend.mappers.UserMapper;
-import com.jorgetfg.backend.repositories.UserRepository;
+import com.jorgetfg.backend.mappers.IUserMapper;
+import com.jorgetfg.backend.repositories.IUserRepository;
+import com.jorgetfg.backend.services.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,35 +18,27 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
-public class UserService {
+public class UserService implements IUserService {
 
-    private final UserMapper userMapper;
+    private final IUserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-    private final UserRepository userRepository;
+    private final IUserRepository userRepository;
 
 
     public UserDto findByEmail(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
-        return userMapper.toUserDto(user);
-    }
+        Optional<User> optionalUser = userRepository.findByEmail(email);
 
-    public UserDto login(CredentialDto credentialDto) {
-        User user = userRepository.findByEmail(credentialDto.getEmail())
-                .orElseThrow(() -> new AppException("Unknowkn user", HttpStatus.NOT_FOUND));
-
-        if(passwordEncoder.matches(CharBuffer.wrap(credentialDto.getPassword()),user.getPassword())) {
-            return userMapper.toUserDto(user);
+        if (optionalUser.isEmpty()) {
+            return null;
         }
-
-        throw new AppException("Invalid password",HttpStatus.BAD_REQUEST);
+        return userMapper.toUserDto(optionalUser.get());
     }
 
     public UserDto register(SignUpDto userDto) {
         Optional<User> optionalUser = userRepository.findByEmail(userDto.getEmail());
 
         if (optionalUser.isPresent()) {
-            throw new AppException("Email already exists", HttpStatus.BAD_REQUEST);
+            return null;
         }
 
         User user = userMapper.signUpToUser(userDto);
@@ -54,6 +47,20 @@ public class UserService {
         User savedUser = userRepository.save(user);
 
         return userMapper.toUserDto(savedUser);
+    }
+
+    public UserDto login(CredentialDto credentialDto) {
+        Optional<User> optionalUser = userRepository.findByEmail(credentialDto.getEmail());
+
+        if (optionalUser.isEmpty()) {
+            return null;
+        }
+
+        if(passwordEncoder.matches(CharBuffer.wrap(credentialDto.getPassword()),optionalUser.get().getPassword())) {
+            return userMapper.toUserDto(optionalUser.get());
+        }
+
+        return null;
     }
 
     public List<CompleteUserDto> getAllUsers() {
@@ -70,7 +77,7 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findById(userId);
 
         if (optionalUser.isEmpty()) {
-            throw new AppException("No user with that id", HttpStatus.BAD_REQUEST);
+            return null;
         }
         User user = userRepository.findById(userId).get();
         CompleteUserDto completeUser = userMapper.toCompleteUserDto(user);
@@ -82,7 +89,7 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findById(userId);
 
         if (optionalUser.isEmpty()) {
-            throw new AppException("No user with that id", HttpStatus.BAD_REQUEST);
+            return null;
         }
         User user = userRepository.findById(userId).get();
 
@@ -97,7 +104,7 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findById(userId);
 
         if (optionalUser.isEmpty()) {
-            throw new AppException("No user with that id", HttpStatus.BAD_REQUEST);
+            return null;
         }
         User user = userRepository.findById(userId).get();
         userRepository.delete(user);

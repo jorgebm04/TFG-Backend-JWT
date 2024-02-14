@@ -1,5 +1,6 @@
-package com.jorgetfg.backend.Entity;
+package com.jorgetfg.backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,12 +29,13 @@ public class User {
     private String email;
 
     @Column(name = "user_password", nullable = false, length = 255)
+    @JsonIgnore
     private String password;
 
     @Column(name = "user_messages", nullable = false)
     private boolean messages;
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Folder> folders;
 }

@@ -1,6 +1,5 @@
 package com.jorgetfg.backend.dto;
 
-import com.jorgetfg.backend.Entity.Folder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

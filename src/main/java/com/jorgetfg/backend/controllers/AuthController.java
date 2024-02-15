@@ -7,6 +7,7 @@ import com.jorgetfg.backend.dto.UserDto;
 import com.jorgetfg.backend.services.Imp.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,7 +31,7 @@ public class AuthController {
         }
         UserDto user = userService.login(credentialDto);
         if (user == null) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
         user.setToken(userAuthProvider.createToken(user.getEmail()));
         return ResponseEntity.ok(user);
@@ -44,7 +45,7 @@ public class AuthController {
         }
         UserDto user = userService.register(signUpDto);
         if (user == null) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
         user.setToken(userAuthProvider.createToken(user.getEmail()));
         return ResponseEntity.created(URI.create("/users/" + user.getId()))

@@ -4,6 +4,7 @@ import com.jorgetfg.backend.dto.CompleteSubscriptionDto;
 import com.jorgetfg.backend.dto.CreateSubscriptionDto;
 import com.jorgetfg.backend.services.Imp.SubscriptionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +20,7 @@ public class SubscriptionController {
     public ResponseEntity<List<CompleteSubscriptionDto>> getUserSubscriptions(@PathVariable Long userId) {
         List<CompleteSubscriptionDto> completeSubscriptionDtoList = subscriptionService.getUserSubscriptions(userId);
         if (completeSubscriptionDtoList == null) {
-            return ResponseEntity.badRequest().build();
+            ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(subscriptionService.getUserSubscriptions(userId));
     }
@@ -29,7 +30,7 @@ public class SubscriptionController {
                                                                        @PathVariable Long subscriptionId) {
         CompleteSubscriptionDto completeSubscriptionDto =  subscriptionService.getUserSubscription(userId,subscriptionId);
         if (completeSubscriptionDto == null) {
-            return ResponseEntity.badRequest().build();
+            ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(subscriptionService.getUserSubscription(userId,subscriptionId));
     }
@@ -41,7 +42,7 @@ public class SubscriptionController {
         CompleteSubscriptionDto completeSubscriptionDto = subscriptionService.addUserSubscription(userId,folderId,
                 createSubscriptionDto);
         if (completeSubscriptionDto == null) {
-            return ResponseEntity.badRequest().build();
+            ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(subscriptionService.addUserSubscription(userId,folderId,createSubscriptionDto));
     }
@@ -54,7 +55,7 @@ public class SubscriptionController {
         CompleteSubscriptionDto completeSubscriptionDto = subscriptionService.updateUserSubscription(userId,folderId,
                 subscriptionId,createSubscriptionDto);
         if (completeSubscriptionDto == null) {
-            return ResponseEntity.badRequest().build();
+            ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(subscriptionService.updateUserSubscription(userId,folderId,subscriptionId,createSubscriptionDto));
     }
@@ -65,7 +66,7 @@ public class SubscriptionController {
                                                                           @PathVariable Long subscriptionId) {
         CompleteSubscriptionDto completeSubscriptionDto = subscriptionService.deleteUserSubscription(userId,folderId,subscriptionId);
         if (completeSubscriptionDto == null) {
-            return ResponseEntity.badRequest().build();
+            ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(subscriptionService.deleteUserSubscription(userId,folderId,subscriptionId));
     }

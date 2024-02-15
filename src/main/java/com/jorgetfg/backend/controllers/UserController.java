@@ -4,6 +4,7 @@ import com.jorgetfg.backend.dto.CompleteUserDto;
 import com.jorgetfg.backend.dto.UpdateUserDto;
 import com.jorgetfg.backend.services.Imp.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +23,7 @@ public class UserController {
     public ResponseEntity<CompleteUserDto> getUserById(@PathVariable Long userId){
         CompleteUserDto completeUserDto = userService.getUserById(userId);
         if (completeUserDto == null) {
-            return ResponseEntity.badRequest().build();
+            ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(completeUserDto);
     }
@@ -32,7 +33,7 @@ public class UserController {
                                                       @PathVariable Long userId) {
         CompleteUserDto completeUserDto = userService.updateUser(updateUser,userId);
         if (completeUserDto == null) {
-            return ResponseEntity.badRequest().build();
+            ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(userService.updateUser(updateUser,userId));
     }
@@ -41,7 +42,7 @@ public class UserController {
     public ResponseEntity<CompleteUserDto> deleteUser(@PathVariable Long userId){
         CompleteUserDto completeUserDto = userService.deleteUser(userId);
         if (completeUserDto == null) {
-            return ResponseEntity.badRequest().build();
+            ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(userService.deleteUser(userId));
     }

@@ -4,6 +4,7 @@ import com.jorgetfg.backend.dto.CompleteFolderDto;
 import com.jorgetfg.backend.dto.CreateFolderDto;
 import com.jorgetfg.backend.services.Imp.FolderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +20,7 @@ public class FolderController {
     public ResponseEntity<List<CompleteFolderDto>> getUserFolders(@PathVariable Long userId){
         List<CompleteFolderDto> completeFolderDtoList= folderService.getUserFolders(userId);
         if (completeFolderDtoList == null) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(folderService.getUserFolders(userId));
     }
@@ -28,7 +29,7 @@ public class FolderController {
     public ResponseEntity<CompleteFolderDto> getUserFolder (@PathVariable Long userId, @PathVariable Long folderId) {
         CompleteFolderDto completeFolderDto = folderService.getUserFolder(userId,folderId);
         if (completeFolderDto == null) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(folderService.getUserFolder(userId,folderId));
     }
@@ -37,7 +38,7 @@ public class FolderController {
     public ResponseEntity<CompleteFolderDto> saveUserFolder(@RequestBody CreateFolderDto createFolderDto, @PathVariable Long userId){
         CompleteFolderDto completeFolderDto = folderService.addUserFolder(userId,createFolderDto);
         if (completeFolderDto == null) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(folderService.addUserFolder(userId,createFolderDto));
     }
@@ -47,7 +48,7 @@ public class FolderController {
                                                                @PathVariable Long folderId){
         CompleteFolderDto completeFolderDto = folderService.updateUserFolder(userId,folderId,createFolderDto);
         if (completeFolderDto == null) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(folderService.updateUserFolder(userId,folderId,createFolderDto));
     }
@@ -56,7 +57,7 @@ public class FolderController {
     public ResponseEntity<CompleteFolderDto> deleteUserFolder (@PathVariable Long userId, @PathVariable Long folderId) {
         CompleteFolderDto completeFolderDto = folderService.deleteUserFolder(userId,folderId);
         if (completeFolderDto == null) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(folderService.deleteUserFolder(userId,folderId));
     }
